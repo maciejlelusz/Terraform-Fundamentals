@@ -1,4 +1,4 @@
-# Moduł 05. Internet Gateway i zmienne
+# Moduł 05. Output Values
 
 ## Cel modułu
 
