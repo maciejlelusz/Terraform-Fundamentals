@@ -1,4 +1,4 @@
-# Moduł 04. Deployment
+# Moduł 04: Deployment
 
 ## Cel modułu
 
