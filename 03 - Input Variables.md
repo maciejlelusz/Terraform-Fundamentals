@@ -1,4 +1,4 @@
-# Moduł 03. Input Variables
+# Moduł 03: Input Variables
 
 ## Cel modułu
 
