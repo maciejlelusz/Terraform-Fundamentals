@@ -1,6 +1,6 @@
 # Moduł 09: Użycie publicznego modułu VPC (terraform-aws-modules/vpc)
 
-**Cel modułu**
+## Cel modułu
 
 - Pokazać, jak zastąpić ręczną konfigurację VPC i podsieci publicznym, gotowym modułem z Terraform Registry.
 - Zwrócić uwagę na ograniczenia gotowych moduułów oraz jak wyeliminować najczęściej pojawiający się błąd (brak AZ).
