@@ -1,4 +1,4 @@
-# Moduł 07. Random Values
+# Moduł 07: Random Values
 
 ## Cel modułu
 
