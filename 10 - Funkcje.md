@@ -1,6 +1,6 @@
 # Moduł 10: Tworzenie klucza SSH i konfiguracja uwierzytelniania EC2
 
-## Cel ćwiczenia
+## Cel modułu
 
 - Nauczyć się, jak zdefiniować w Terraform zasób reprezentujący parę kluczy SSH (`aws_key_pair`).
 - Zrozumieć, jak funkcja `file()` wczytuje klucz publiczny z lokalnego systemu plików.
