@@ -1,39 +1,129 @@
-Do stworzenia VPN i podsieci możemy zamiennie do naszego kodu wykorzystać dostępny publicznie moduł. Jeżeli się na niego zdecydujemy jesteśmy ograniczeni jego funkcjonalnością, co nie zawsze jest porządane.
+# Moduł: Użycie publicznego modułu VPC (terraform-aws-modules/vpc)
 
-Usuń wdrożoną w poprzednim zadaniu konfigurację a następnie usuń lub zakomentuj w swojej konfiguracji definicję obiektów ```aws_vpc```, ```aws_internet_gateway```, ```aws_subnet``` oraz outputu ```vpc_subnet```
+**Cel ćwiczenia**
 
-Dodaj do konfiguracji wywołanie modułu
+- Pokazać, jak zastąpić ręczną konfigurację VPC i podsieci publicznym, gotowym modułem z Terraform Registry.
+- Zwrócić uwagę na ograniczenia gotowych moduułów oraz jak wyeliminować najczęściej pojawiający się błąd (brak AZ).
 
-```
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "2.21.0"
+---
 
-  cidr = "10.0.0.0/16"
+## Wymagania wstępne
 
-  public_subnets  = ["10.0.${random_integer.octet.result}.0/24"]
+- Poprawnie skonfigurowane AWS credentials (np. przez `~/.aws/credentials` albo zmienne środowiskowe).
+- Zainstalowany Terraform (wersja kompatybilna z używanym modułem — w tym ćwiczeniu zakładamy Terraform ≥ 0.12).
+- Projekt/plik Terraform z poprzedniego zadania (zawierający definicje `aws_vpc`, `aws_internet_gateway`, `aws_subnet` oraz output `vpc_subnet`).
 
-}
-```
+---
 
-Dokumentację modułu znajdziesz pod adresem https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/2.21.0
+## Instrukcja krok po kroku
 
-Zainstaluj moduł poleceniem ```terraform init```, następnie zaplanuj zmiany poleceniem ```terraform plan```
+1. **Usuń dotychczasowe zasoby z Terraform i/lub skomentuj definicje w kodzie**
 
-Z komuniktu błędu odczytamy, że brakuje definicji co najmniej jednej Avalability Zone. Zmodyfikuj wywołanie modułu
-```
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "2.21.0"
+   Jeśli w poprzednim zadaniu wdrożyłeś zasoby, najpierw je usuń poleceniem:
 
-  cidr = "10.0.0.0/16"
+   ```bash
+   terraform destroy
+   ```
 
-  azs             = [ "eu-central-1a" ]
-  public_subnets  = ["10.0.${random_integer.octet.result}.0/24"]
+   Następnie w swoim kodzie Terraform (pliki `.tf`) **usuń lub zakomentuj** definicje:
 
-}
-```
+   - `aws_vpc`
+   - `aws_internet_gateway`
+   - `aws_subnet`
+   - output `vpc_subnet`
 
-Ponownie zaplanuj a następnie przeprowadź wdrożenie. Po poprawnej weryfikacji usuń wdrożenie. Przywróć też zawartość swojego pliku topologii z poprzedniego zadania.
+   > Uwaga: zamiast trwale usuwać pliki możesz je zakomentować (/* ... */ lub //) — ważne, by Terraform ich już nie tworzył.
 
+2. **Dodaj wywołanie publicznego modułu VPC**
+
+   W pliku `main.tf` (lub innym odpowiednim) wklej poniższą definicję modułu:
+
+   ```hcl
+   module "vpc" {
+     source  = "terraform-aws-modules/vpc/aws"
+     version = "2.21.0"
+
+     cidr = "10.0.0.0/16"
+
+     public_subnets  = ["10.0.${random_integer.octet.result}.0/24"]
+   }
+   ```
+
+   > Link do dokumentacji modułu: https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/2.21.0
+
+3. **Zainicjuj Terraform**
+
+   ```bash
+   terraform init
+   ```
+
+   To pobierze moduł i jego zależności.
+
+4. **Zaplanuj zmiany**
+
+   ```bash
+   terraform plan
+   ```
+
+   Po uruchomieniu planu najprawdopodobniej otrzymasz błąd wskazujący, że brakuje definicji co najmniej jednej Availability Zone (AZ). Moduł oczekuje listy AZ-ów przekazywanej w parametrze `azs`.
+
+5. **Dodaj AZ do wywołania modułu**
+
+   Zmodyfikuj definicję modułu, dodając parametr `azs`. Przykład dla regionu `eu-central-1`:
+
+   ```hcl
+   module "vpc" {
+     source  = "terraform-aws-modules/vpc/aws"
+     version = "2.21.0"
+
+     cidr = "10.0.0.0/16"
+
+     azs             = [ "eu-central-1a" ]
+     public_subnets  = ["10.0.${random_integer.octet.result}.0/24"]
+   }
+   ```
+
+   **Wyjaśnienie:** `azs` to lista stref dostępności, na których moduł będzie tworzył zasoby (subnets, route tables itd.). Nawet jeśli chcesz tylko jedną podsieć, musisz podać przynajmniej jedną AZ.
+
+6. **Powtórz planowanie i wdrożenie**
+
+   ```bash
+   terraform plan
+   terraform apply
+   ```
+
+   - Przejrzyj rezultat `plan`.
+   - Wykonaj `apply`, jeśli wszystko wygląda poprawnie.
+
+7. **Weryfikacja**
+
+   - Sprawdź w konsoli AWS (VPC -> Your VPCs / Subnets) czy VPC i podsieć(-i) zostały utworzone.
+   - Zwróć uwagę na nazewnictwo, tagi i przypisane routingi — moduł tworzy standardowe zasoby (route table, subnet associations, itp.).
+
+8. **Sprzątanie**
+
+   Po weryfikacji usuń wdrożenie:
+
+   ```bash
+   terraform destroy
+   ```
+
+   Upewnij się, że zasoby w AWS zniknęły.
+
+9. **Przywrócenie poprzedniej topologii**
+
+   - Przywróć (odkomentuj lub przywróć z kopii) plik topologii, który używałeś w poprzednim zadaniu — tak, by Twoje środowisko znowu zawierało wcześniejsze definicje `aws_vpc`, `aws_subnet` itd.
+
+---
+
+## Dodatkowe uwagi i wskazówki trenerskie
+
+- **Zalety użycia modułu:** szybkie wdrożenie, sprawdzone wzorce, mniejsza ilość kodu do utrzymania.
+- **Wady:** ograniczona elastyczność — jeśli potrzebujesz niestandardowego zachowania, możesz być zmuszony do modyfikacji modułu albo napisania własnych zasobów.
+- **Wersjonowanie modułu:** zawsze określ wersję (`version = "2.21.0"`) — dzięki temu unikniesz niespodzianek przy aktualizacji.
+- **Testy lokalne:** przed `apply` zawsze sprawdź `plan`. W środowisku szkoleniowym pamiętaj, by nie zostawiać niepotrzebnych zasobów (koszty!).
+
+---
+
+Jeśli chcesz, przygotuję krótką checklistę do wydruku (np. w formacie `README.md`) lub wersję zadania z gotowym szablonem pliku `main.tf` do skopiowania. Napisz, co preferujesz.
 
