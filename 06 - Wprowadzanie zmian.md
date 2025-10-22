@@ -1,4 +1,4 @@
-# Moduł 06. Wprowadzanie zmian
+# Moduł 06: Wprowadzanie zmian
 
 ## Cel modułu
 
