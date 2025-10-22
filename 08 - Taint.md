@@ -1,4 +1,4 @@
-# Moduł 08. Oznaczanie zasobów jako Tainted
+# Moduł 08: Oznaczanie zasobów jako Tainted
 
 ## Cel modułu
 
