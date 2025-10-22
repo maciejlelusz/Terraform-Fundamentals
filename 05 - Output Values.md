@@ -1,4 +1,4 @@
-# Moduł 05. Output Values
+# Moduł 05: Output Values
 
 ## Cel modułu
 
