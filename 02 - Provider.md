@@ -1,4 +1,4 @@
-# Moduł 02. Provider
+# Moduł 02: Provider
 
 ## Cel modułu
 
