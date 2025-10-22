@@ -1,4 +1,4 @@
-# Moduł: Użycie publicznego modułu VPC (terraform-aws-modules/vpc)
+# Moduł 09: Użycie publicznego modułu VPC (terraform-aws-modules/vpc)
 
 **Cel ćwiczenia**
 
