@@ -1,4 +1,4 @@
-# Moduł 04a. Makefile
+# Moduł 04a: Makefile
 
 ## Cel modułu
 
