@@ -1,4 +1,4 @@
-# Modul 01. Przygotowanie do pracy z Terraform
+# Modul 01: Przygotowanie do pracy z Terraform
 
 ## Cel modułu
 
